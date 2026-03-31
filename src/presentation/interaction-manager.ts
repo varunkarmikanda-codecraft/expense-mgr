@@ -2,6 +2,8 @@ import * as readline from 'node:readline';
 import { stdin as input, stdout as output } from "node:process";
 import type { ValidatorFn } from '../core/validators/validator.type.js';
 
+const rl = readline.createInterface({ input, output })
+
 export interface AskOptions {
   defaultAnswer?: string | undefined;
   validator?: ValidatorFn | undefined;
