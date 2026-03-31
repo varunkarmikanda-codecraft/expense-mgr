@@ -16,7 +16,7 @@ export const openInteractionManager = () => {
 
   const rl = readline.createInterface({ input, output })
 
-  const ask = async (question: string, options?: AskOptions) => {
+  const ask = async (question: string, options?: AskOptions): Promise<string | undefined> => {
   const { defaultAnswer, validator } = options || {};
 
     return new Promise((resolve) => {
@@ -30,15 +30,20 @@ export const openInteractionManager = () => {
     });
   }
 
-  const choose = async (question: string, choices: Choice[]) => {
+  const choose: (question: string, choices: Choice[], optional?: boolean) => Promise<Choice | undefined> = async (question, choices, optional) => {
     console.log(question);
     choices.forEach((choice) => {
       console.log(`${choice.value}. ${choice.label}`);
     })
-    const validator: ValidatorFn = (input: string) => {
-      return choices.some(choice => choice.value.toLowerCase() === input.toLowerCase());
-    }
-    return ask('Please enter a choice', { validator });
+    const choice = await ask('Please enter your choice: ', {
+      validator: (input) => {
+        if(!optional && input.trim() === "") {
+          return true;
+        }
+        return choices.some(choice => choice.value === input)
+      }
+    })
+    return choices.find(c => c.value === choice)
   }
 
   const close = () => {
